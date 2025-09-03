@@ -52,7 +52,7 @@ jobs:
       # Menyimpan file model yang sudah berhasil dilatih
       # 'Artifact' bisa diunduh atau digunakan oleh job/workflow lain, ini adalah bagian dari 'Continuous Deployment' (CD)
       - name: Upload Trained Model as an Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4 # <<< PERUBAHAN DI SINI
         with:
           name: ml-model
           path: model/simple_linear_regression.joblib

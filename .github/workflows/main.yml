@@ -1,0 +1,58 @@
+# Nama dari workflow ini, akan muncul di tab 'Actions' di repository GitHub
+name: ML CI/CD Pipeline
+
+# Event yang akan memicu workflow ini untuk berjalan secara otomatis
+on:
+  # Workflow akan berjalan setiap kali ada 'push' ke branch 'main'
+  push:
+    branches:
+      - main
+  # Workflow juga akan berjalan setiap kali ada 'pull request' ke branch 'main'
+  pull_request:
+    branches:
+      - main
+
+# Definisi 'jobs' atau pekerjaan yang akan dijalankan oleh workflow
+jobs:
+  # Nama unik untuk job ini.
+  build-and-train:
+    # Menentukan runner (server virtual) yang akan digunakan untuk menjalankan job ini.
+    # 'ubuntu-latest' adalah pilihan yang paling umum dan serbaguna.
+    runs-on: ubuntu-latest
+
+    # Sekumpulan 'steps' (langkah-langkah) yang akan dieksekusi secara berurutan
+    steps:
+      # Langkah 1: Checkout Repository
+      # Mengambil (clone) kode dari repository GitHub ke runner (server virtual)
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # Langkah 2: Setup Python
+      # Mengatur lingkungan Python dengan versi 3.10
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      # Langkah 3: Install Dependencies
+      # Menginstal semua library Python yang terdaftar di requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Langkah 4: Latih dan Simpan Model ML
+      # Menjalankan skrip Python 'train_model.py' untuk melatih model
+      # Ini adalah bagian dari 'Continuous Integration' (CI)
+      - name: Train and Save ML Model
+        run: |
+          python train_model.py
+
+      # Langkah 5: Upload Model yang Sudah Terlatih sebagai Artifact
+      # Menyimpan file model yang sudah berhasil dilatih
+      # 'Artifact' bisa diunduh atau digunakan oleh job/workflow lain, ini adalah bagian dari 'Continuous Deployment' (CD)
+      - name: Upload Trained Model as an Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ml-model
+          path: model/simple_linear_regression.joblib

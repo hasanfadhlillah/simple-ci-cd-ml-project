@@ -23,7 +23,7 @@ print(" ")
 
 # Membagi data
 print("2. Membagi data menjadi training dan testing...")
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_state=42)
 print(f"    Jumlah data training: {len(X_train)}")
 print(f"    Jumlah data testing: {len(X_test)}")
 print(" ")

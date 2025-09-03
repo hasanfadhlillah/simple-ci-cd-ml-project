@@ -1,4 +1,4 @@
-# Nama dari workflow ini, akan muncul di tab 'Actions' di repository GitHub
+# Nama dari workflow ini
 name: ML CI/CD Pipeline
 
 # Event yang akan memicu workflow ini untuk berjalan secara otomatis

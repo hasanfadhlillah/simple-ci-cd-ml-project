@@ -40,20 +40,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Langkah 4: Latih dan Simpan Model ML
+      # Langkah 4: Latih Model ML
       # Menjalankan skrip Python 'train_model.py' untuk melatih model
-      - name: Latih dan Simpan Model ML
+      - name: Train and Save ML Model
         run: |
           python train_model.py
-          if [ ! -f "model/simple_linear_regression.joblib" ]; then
-            echo "Error: File model tidak ditemukan setelah pelatihan!"
-            exit 1
-          fi
-
-      # Langkah 5: Upload Model yang Sudah Terlatih sebagai Artifact
-      # Menyimpan file model yang sudah berhasil dilatih
-      - name: Upload Model yang Sudah Terlatih sebagai Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ml-model
-          path: model/simple_linear_regression.joblib

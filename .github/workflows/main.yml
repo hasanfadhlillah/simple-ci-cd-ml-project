@@ -17,7 +17,6 @@ jobs:
   # Nama unik untuk job ini.
   build-and-train:
     # Menentukan runner (server virtual) yang akan digunakan untuk menjalankan job ini.
-    # 'ubuntu-latest' adalah pilihan yang paling umum dan serbaguna.
     runs-on: ubuntu-latest
 
     # Sekumpulan 'steps' (langkah-langkah) yang akan dieksekusi secara berurutan
@@ -43,16 +42,14 @@ jobs:
 
       # Langkah 4: Latih dan Simpan Model ML
       # Menjalankan skrip Python 'train_model.py' untuk melatih model
-      # Ini adalah bagian dari 'Continuous Integration' (CI)
       - name: Train and Save ML Model
         run: |
           python train_model.py
 
       # Langkah 5: Upload Model yang Sudah Terlatih sebagai Artifact
       # Menyimpan file model yang sudah berhasil dilatih
-      # 'Artifact' bisa diunduh atau digunakan oleh job/workflow lain, ini adalah bagian dari 'Continuous Deployment' (CD)
       - name: Upload Trained Model as an Artifact
-        uses: actions/upload-artifact@v4 # <<< PERUBAHAN DI SINI
+        uses: actions/upload-artifact@v4
         with:
           name: ml-model
           path: model/simple_linear_regression.joblib

@@ -51,7 +51,7 @@ jobs:
         run: docker cp ml-container:/app/model.joblib .
 
       - name: Upload Model as Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: trained-ml-model
           path: model.joblib

@@ -1,7 +1,5 @@
-# Nama dari workflow ini
 name: ML CI/CD Pipeline with Docker
 
-# Event yang akan memicu workflow
 on:
   push:
     branches:
@@ -10,36 +8,34 @@ on:
     branches:
       - main
 
-# Definisi jobs
 jobs:
   # Job 1: Membangun dan Mendorong Docker Image
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Log in to Docker Hub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
           context: .
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/simple-ml-model:latest
 
-  # Job 2: Melatih Model Menggunakan Docker & Menyimpan Artifact
+  # Job 2: Melatih Model dan Menyimpan Hasil
   train-and-save:
-    # Job ini baru akan berjalan setelah job 'build' selesai
     needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Pull Docker image from Docker Hub
         run: docker pull ${{ secrets.DOCKERHUB_USERNAME }}/simple-ml-model:latest
@@ -47,11 +43,44 @@ jobs:
       - name: Run training script inside Docker container
         run: docker run --name ml-container ${{ secrets.DOCKERHUB_USERNAME }}/simple-ml-model:latest
 
-      - name: Copy trained model from container
-        run: docker cp ml-container:/app/model.joblib .
+      - name: Create artifact directory
+        run: mkdir -p artifacts
 
-      - name: Upload Model as Artifact
+      - name: Copy trained model from container
+        run: docker cp ml-container:/app/model.joblib ./artifacts
+
+      - name: Copy report from container
+        run: docker cp ml-container:/app/report.html ./artifacts
+
+      - name: Upload Results as Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: trained-ml-model
-          path: model.joblib
+          name: training-results
+          path: artifacts
+
+  # Job 3: Deploy Laporan ke GitHub Pages
+  deploy-report:
+    needs: train-and-save
+    runs-on: ubuntu-latest
+    # Berikan izin untuk men-deploy ke Pages
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: training-results
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload to Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "."
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
